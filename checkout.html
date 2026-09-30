@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Checkout | Leaf & Kettle</title>
+<!-- TRUETEST SNIPPET: paste the Katalon TrueTest snippet on the next line -->
+
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="checkout">
+<header class="site" id="site-header"></header>
+<main><div class="wrap">
+<h1>Checkout</h1>
+<div id="checkout">
+<p class="notice" id="login-notice" hidden>You're checking out as a guest. <a href="login.html?next=checkout.html" id="checkout-login">Log in</a> to fill in your email.</p>
+<div class="checkout" style="margin-top:20px">
+<form id="checkout-form" novalidate>
+ <div class="field"><label for="co-name">Full name</label><input id="co-name" autocomplete="name"><div class="err" id="co-name-err"></div></div>
+ <div class="field"><label for="co-email">Email</label><input id="co-email" type="email" autocomplete="email"><div class="err" id="co-email-err"></div></div>
+ <div class="field"><label for="co-address">Street address</label><input id="co-address" autocomplete="street-address"><div class="err" id="co-address-err"></div></div>
+ <div class="row">
+  <div class="field"><label for="co-city">City</label><input id="co-city" autocomplete="address-level2"><div class="err" id="co-city-err"></div></div>
+  <div class="field"><label for="co-pin">PIN code</label><input id="co-pin" inputmode="numeric" maxlength="6" autocomplete="postal-code"><div class="err" id="co-pin-err"></div></div>
+ </div>
+ <div class="field"><label for="co-card">Card number (demo, use 16 digits)</label><input id="co-card" class="katalon-excluded" inputmode="numeric" maxlength="19" autocomplete="off"><div class="err" id="co-card-err"></div></div>
+ <button class="btn" type="submit" id="place-order">Place order</button>
+</form>
+<aside><h2 style="font-size:1.4rem;margin-bottom:12px">Order summary</h2><div id="order-summary"></div></aside>
+</div></div>
+</div></main>
+<footer class="site"><div class="wrap">Leaf &amp; Kettle is a demo shop for testing. No real orders are placed.</div></footer>
+<script src="app.js"></script>
+</body>
+</html>
