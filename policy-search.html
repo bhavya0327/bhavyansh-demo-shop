@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Policy search | Leaf &amp; Kettle test page</title>
+<!-- TrueTest agent: same snippet as the other Leaf & Kettle pages -->
+<script defer async client-code="KA-1587450-03" src="https://static.katalon.com/libs/traffic-agent/v1/traffic-agent.min.js"></script>
+<style>
+  body { margin: 0; font: 15px/1.5 -apple-system, "Segoe UI", system-ui, sans-serif; color: #1E2A36; background: #F4F6F8; }
+  header { background: #22303D; color: #fff; padding: 12px 24px; display: flex; gap: 24px; align-items: center; }
+  header strong { font-size: 17px; }
+  nav button { background: none; border: 0; color: #C9D6E2; font: inherit; padding: 6px 10px; cursor: pointer; }
+  nav button[aria-selected="true"] { color: #fff; border-bottom: 2px solid #fff; }
+  main { max-width: 720px; margin: 24px auto; background: #fff; border: 1px solid #D5DCE3; border-radius: 6px; padding: 20px 24px; }
+  h1 { font-size: 19px; margin: 0 0 4px; }
+  p.hint { color: #5A6876; margin: 0 0 16px; font-size: 14px; }
+  label { display: block; margin: 12px 0 4px; font-size: 14px; color: #3D4A57; }
+  /* Resonant-like field: base classes + state classes */
+  .rsx-TextBox { width: 260px; padding: 7px 9px; border: 1px solid #B8C3CE; border-radius: 3px; font: inherit; }
+  .rsx-TextBox.rsxHover { border-color: #5B8DEF; }
+  .rsx-TextBox.rsxFocus { border-color: #1F5FD1; outline: 2px solid #CFE0FF; }
+  .rsx-TextBox.invalid { background: #FFF6F5; }
+  button.primary { margin-top: 16px; padding: 8px 16px; background: #1F5FD1; color: #fff; border: 0; border-radius: 4px; font: inherit; cursor: pointer; }
+  table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+  td, th { text-align: left; padding: 6px 8px; border-bottom: 1px solid #E3E8ED; }
+  tr.result { cursor: pointer; }
+  tr.result:hover { background: #EEF3FB; }
+  #classLog { font: 12px ui-monospace, Menlo, monospace; color: #5A6876; margin-top: 18px; white-space: pre-wrap; }
+  [hidden] { display: none; }
+</style>
+</head>
+<body>
+<header>
+  <strong>Leaf &amp; Kettle: policy desk (test)</strong>
+  <nav role="tablist">
+    <button role="tab" id="tab-search" aria-selected="true">Search</button>
+    <button role="tab" id="tab-application" aria-selected="false">Application</button>
+  </nav>
+</header>
+
+<main>
+  <section id="search-panel">
+    <h1>Search</h1>
+    <p class="hint">Hover over a field, click it, then type. Don't use the Tab key.</p>
+    <label for="TextBox_101">Policy #</label>
+    <input id="TextBox_101" name="policyNumber" datafield="policyNumber" class="rsx-TextBox required" type="text" autocomplete="off">
+    <br>
+    <button class="primary" id="searchBtn" type="button">Search</button>
+    <table id="results" hidden>
+      <thead><tr><th>Policy #</th><th>Insured</th><th>Status</th></tr></thead>
+      <tbody><tr class="result" id="resultRow"><td id="resPolicy"></td><td>Test, Alex</td><td>Pending</td></tr></tbody>
+    </table>
+  </section>
+
+  <section id="application-panel" hidden>
+    <h1>Application</h1>
+    <p class="hint">Hover over a field, click it, then type. Don't use the Tab key.</p>
+    <label for="TextBox_117">First Name</label>
+    <input id="TextBox_117" name="firstName" datafield="firstName" class="rsx-TextBox required" type="text" autocomplete="off">
+    <label for="TextBox_122">Birth Date</label>
+    <input id="TextBox_122" name="birthDate" datafield="birthDate" class="rsx-TextBox required invalid" type="text" placeholder="MM/DD/YYYY" autocomplete="off">
+    <br>
+    <button class="primary" id="saveBtn" type="button">Save application</button>
+    <p class="hint" id="saved" aria-live="polite"></p>
+  </section>
+
+  <div id="classLog" aria-hidden="true"></div>
+</main>
+
+<script>
+  // Mimic Resonant's state classes:
+  //   mouse over a field  -> adds rsxHover   (so the click is captured with rsxHover)
+  //   field has focus     -> rsxHover replaced by rsxFocus (so typing is captured with rsxFocus)
+  //   Birth Date          -> "invalid" until it is a valid MM/DD/YYYY date
+  var log = document.getElementById('classLog');
+  function show(el, why) {
+    log.textContent = (new Date().toLocaleTimeString() + '  ' + el.id + '  [' + why + ']  class="' + el.className + '"\n' + log.textContent).slice(0, 2000);
+  }
+  document.querySelectorAll('.rsx-TextBox').forEach(function (el) {
+    el.addEventListener('mouseenter', function () {
+      if (document.activeElement !== el) { el.classList.add('rsxHover'); show(el, 'hover'); }
+    });
+    el.addEventListener('mouseleave', function () { el.classList.remove('rsxHover'); });
+    el.addEventListener('focus', function () {
+      el.classList.remove('rsxHover'); el.classList.add('rsxFocus'); show(el, 'focus');
+    });
+    el.addEventListener('blur', function () { el.classList.remove('rsxFocus'); show(el, 'blur'); });
+  });
+  var birth = document.getElementById('TextBox_122');
+  birth.addEventListener('input', function () {
+    var ok = /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/.test(birth.value);
+    birth.classList.toggle('invalid', !ok);
+  });
+
+  // Tabs and a simple search result, like the customer's flow.
+  function showTab(name) {
+    var search = name === 'search';
+    document.getElementById('search-panel').hidden = !search;
+    document.getElementById('application-panel').hidden = search;
+    document.getElementById('tab-search').setAttribute('aria-selected', String(search));
+    document.getElementById('tab-application').setAttribute('aria-selected', String(!search));
+  }
+  document.getElementById('tab-search').onclick = function () { showTab('search'); };
+  document.getElementById('tab-application').onclick = function () { showTab('application'); };
+  document.getElementById('searchBtn').onclick = function () {
+    document.getElementById('resPolicy').textContent = document.getElementById('TextBox_101').value || '(empty)';
+    document.getElementById('results').hidden = false;
+  };
+  document.getElementById('resultRow').ondblclick = function () { showTab('application'); };
+  document.getElementById('saveBtn').onclick = function () {
+    document.getElementById('saved').textContent = 'Saved at ' + new Date().toLocaleTimeString();
+  };
+</script>
+</body>
+</html>
